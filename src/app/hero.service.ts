@@ -15,6 +15,29 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 export class HeroService {
   constructor(private messagesSrv: MessagesService, private http: HttpClient) {}
 
+  // log -
+  private log(message: string) {
+    this.messagesSrv.add(`HeroService: ${message}`);
+  }
+
+  // heroesUrl -
+  private heroesUrl = 'api/heroes';
+
+  // httpOptions -
+  httpOptions = {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+  };
+
+  // handleError -
+  private handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+      console.error(error); // log to console instead
+      this.log(`${operation} failed: ${error.message}`);
+      return of(result as T);
+    };
+  }
+
+  // getter -----
   // getHeroes - 取得英雄列表
   getHeroes(): Observable<Hero[]> {
     return this.http.get<Hero[]>(this.heroesUrl).pipe(
@@ -32,20 +55,12 @@ export class HeroService {
     );
   }
 
-  // log -
-  private log(message: string) {
-    this.messagesSrv.add(`HeroService: ${message}`);
-  }
-
-  // heroesUrl -
-  private heroesUrl = 'api/heroes';
-
-  // handleError -
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      console.error(error); // log to console instead
-      this.log(`${operation} failed: ${error.message}`);
-      return of(result as T);
-    };
+  // setter -----
+  // updateHero - 更新英雄
+  updateHero(hero: Hero): Observable<any> {
+    return this.http.put(this.heroesUrl, hero, this.httpOptions).pipe(
+      tap((_) => this.log(`updated hero id=${hero.id}`)),
+      catchError(this.handleError<any>(`updateed`))
+    );
   }
 }
