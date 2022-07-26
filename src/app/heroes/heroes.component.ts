@@ -3,7 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import { Hero } from '../hero.interface';
 // Srv
 import { HeroService } from '../hero.service';
-import { MessagesService } from '../messages.service';
 
 @Component({
   selector: 'app-heroes',
@@ -14,24 +13,14 @@ export class HeroesComponent implements OnInit {
   // heroes -
   heroes: Hero[] = [];
 
-  constructor(
-    private heroSrv: HeroService,
-    private messageSrv: MessagesService
-  ) {}
+  constructor(private heroSrv: HeroService) {}
 
   ngOnInit(): void {
-    this.getHeros();
+    this.getHeroes();
   }
 
-  // selectedHero - 選擇的英雄
-  selectedHero?: Hero;
-  // onSelect - 選擇英雄事件
-  onSelect(hero: Hero): void {
-    this.selectedHero = hero;
-    this.messageSrv.add(`HeroesComponent: Selected hero id=${hero.id}`);
-  }
-  // getHeros - 取得英雄列表
-  getHeros(): void {
-    this.heroSrv.getHeros().subscribe((heroes) => (this.heroes = heroes));
+  // getHeroes - 取得英雄列表
+  getHeroes(): void {
+    this.heroSrv.getHeroes().subscribe((heroes) => (this.heroes = heroes));
   }
 }
