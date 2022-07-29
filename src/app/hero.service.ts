@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 // Interface
 import { Hero } from './hero.interface';
+import { HeroDetail } from './model/hero-detail';
 // RxJS
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
@@ -8,6 +9,8 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { MessagesService } from './messages.service';
 // Http
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+// Parse
+import * as Parse from 'parse';
 
 @Injectable({
   providedIn: 'root',
@@ -23,6 +26,9 @@ export class HeroService {
   // heroesUrl -
   private heroesUrl = 'api/heroes';
 
+  /** heroC - parseClass */
+  private heroC = new Parse.Query('exampleHero');
+
   // httpOptions -
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
@@ -31,7 +37,7 @@ export class HeroService {
   // handleError -
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
-      console.error(error); // log to console instead
+      console.error(error);
       this.log(`${operation} failed: ${error.message}`);
       return of(result as T);
     };
@@ -39,11 +45,19 @@ export class HeroService {
 
   // getter -----
   // getHeroes - 取得英雄列表
-  getHeroes(): Observable<Hero[]> {
-    return this.http.get<Hero[]>(this.heroesUrl).pipe(
-      tap((_) => this.log('fetched heroes')),
-      catchError(this.handleError<Hero[]>('getHeroes', []))
-    );
+  async getHeroes() {
+    let result: HeroDetail[] = [];
+    try {
+      const promise = await this.heroC.find();
+      result = promise.map((item) => new HeroDetail(item));
+    } catch (error) {
+      console.log(error);
+    }
+    return result;
+    /** return this.http.get<Hero[]>(this.heroesUrl).pipe( */
+    /** tap((_) => this.log('fetched heroes')), */
+    /** catchError(this.handleError<Hero[]>('getHeroes', [])) */
+    /** ); */
   }
 
   // getHeroByID - 透過ID取得英雄

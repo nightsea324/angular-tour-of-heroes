@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 // Interface
 import { Hero } from '../hero.interface';
+import { HeroDetail } from '../model/hero-detail';
 // Srv
 import { HeroService } from '../hero.service';
 
@@ -11,7 +12,7 @@ import { HeroService } from '../hero.service';
 })
 export class HeroesComponent implements OnInit {
   // heroes -
-  heroes: Hero[] = [];
+  heroes: HeroDetail[] = [];
 
   constructor(private heroSrv: HeroService) {}
 
@@ -21,8 +22,8 @@ export class HeroesComponent implements OnInit {
 
   // getter ------
   // getHeroes - 取得英雄列表
-  getHeroes(): void {
-    this.heroSrv.getHeroes().subscribe((heroes) => (this.heroes = heroes));
+  async getHeroes() {
+    this.heroes = await this.heroSrv.getHeroes();
   }
 
   // setter -----
@@ -33,15 +34,15 @@ export class HeroesComponent implements OnInit {
       return;
     }
     this.heroSrv.addHero({ name } as Hero).subscribe((hero) => {
-      this.heroes.push(hero);
+      /** this.heroes.push(hero); */
     });
   }
 
   /**
    * delete - 刪除英雄
    */
-  delete(inHero: Hero): void {
-    this.heroes = this.heroes.filter((hero) => hero !== inHero);
-    this.heroSrv.deleteHero(inHero.id).subscribe();
+  delete(inHero: HeroDetail): void {
+    /** this.heroes = this.heroes.filter((hero) => hero !== inHero); */
+    /** this.heroSrv.deleteHero(inHero.id).subscribe(); */
   }
 }

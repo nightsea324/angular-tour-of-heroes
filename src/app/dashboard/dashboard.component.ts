@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 // Interface
 import { Hero } from '../hero.interface';
+import { HeroDetail } from '../model/hero-detail';
 // Srv
 import { HeroService } from '../hero.service';
 
@@ -10,7 +11,7 @@ import { HeroService } from '../hero.service';
   styleUrls: ['./dashboard.component.css'],
 })
 export class DashboardComponent implements OnInit {
-  heroes: Hero[] = [];
+  heroes: HeroDetail[] = [];
 
   constructor(private heroSrv: HeroService) {}
 
@@ -19,9 +20,7 @@ export class DashboardComponent implements OnInit {
   }
 
   // getHeroes - 取得英雄列表
-  getHeroes(): void {
-    this.heroSrv.getHeroes().subscribe((heroes) => {
-      this.heroes = heroes.splice(1, 5);
-    });
+  async getHeroes() {
+    this.heroes = (await this.heroSrv.getHeroes()).splice(1, 5);
   }
 }
