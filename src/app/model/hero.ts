@@ -1,4 +1,4 @@
-export class HeroDetail {
+export class Hero {
   private parseObject: Parse.Object;
   private ID: number;
   private name: string;
@@ -20,5 +20,24 @@ export class HeroDetail {
 
   public getName(): string {
     return this.name;
+  }
+
+  /** setter */
+  /**
+   * setID -
+   *
+   * @param ID - number
+   */
+  public setID(ID: number) {
+    this.ID = ID;
+  }
+
+  /**
+   * setName -
+   *
+   * @param name - string
+   */
+  public setName(name: string) {
+    this.name = name;
   }
 }

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 // Interface
-import { Hero } from '../hero.interface';
-import { HeroDetail } from '../model/hero-detail';
+import { Hero } from '../model/hero';
 // Srv
 import { HeroService } from '../hero.service';
 
@@ -11,7 +10,7 @@ import { HeroService } from '../hero.service';
   styleUrls: ['./dashboard.component.css'],
 })
 export class DashboardComponent implements OnInit {
-  heroes: HeroDetail[] = [];
+  heroes: Hero[] = [];
 
   constructor(private heroSrv: HeroService) {}
 

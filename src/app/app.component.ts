@@ -1,8 +1,13 @@
 import { Component, OnInit } from '@angular/core';
+
+/** getCONFIG */
+import { CONFIG } from '../../../CONFIG';
+
+/** Parse */
 import * as Parse from 'parse';
 const parse = require('parse');
-parse.initialize('key');
-parse.serverURL = 'url';
+parse.initialize(CONFIG.Parse.initialize);
+parse.serverURL = CONFIG.Parse.serverURL;
 
 @Component({
   selector: 'app-root',
