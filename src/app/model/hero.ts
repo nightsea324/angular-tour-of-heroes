@@ -1,3 +1,4 @@
+/** Hero - 英雄物件 */
 export class Hero {
   private parseObject: Parse.Object;
   private ID: string;

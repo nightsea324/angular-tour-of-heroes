@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 // Interface
 import { Hero } from '../model/hero';
-import { Hero as HeroInterface } from '../hero.interface';
+import { HeroDto } from '../model/Dto/hero.dto';
 // Srv
 import { HeroService } from '../hero.service';
 
@@ -14,7 +14,7 @@ import { HeroService } from '../hero.service';
 })
 export class HeroDetailComponent implements OnInit {
   hero?: Hero;
-  HeroDetail: HeroInterface = {
+  HeroDetail: HeroDto = {
     ID: '',
     name: '',
   };

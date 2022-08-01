@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+
 // Interface
 import { Hero } from '../model/hero';
-import { Hero as HeroDetail } from '../hero.interface';
+import { HeroDto } from '../model/Dto/hero.dto';
+
 // Srv
 import { HeroService } from '../hero.service';
 
@@ -41,7 +43,7 @@ export class HeroesComponent implements OnInit {
       alert('empty name');
       return;
     }
-    const newHero: HeroDetail = {
+    const newHero: HeroDto = {
       ID: '',
       name: name.trim(),
     };

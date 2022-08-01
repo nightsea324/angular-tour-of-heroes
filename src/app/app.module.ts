@@ -10,9 +10,6 @@ import { FormsModule } from '@angular/forms';
 // Http
 import { HttpClientModule } from '@angular/common/http';
 
-// In Memory Web API
-import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
-
 // Component
 import { HeroesComponent } from './heroes/heroes.component';
 import { HeroDetailComponent } from './hero-detail/hero-detail.component';

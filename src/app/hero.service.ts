@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 // Interface
 import { Hero } from './model/hero';
-import { Hero as HeroDetail } from './hero.interface';
+import { HeroDto } from './model/Dto/hero.dto';
 // Parse
 import * as Parse from 'parse';
 // config
@@ -69,7 +69,7 @@ export class HeroService {
    *
    * @param hero - HeroDetail
    */
-  async updateHero(hero: HeroDetail) {
+  async updateHero(hero: HeroDto) {
     const query = new Parse.Query(this.heroC);
 
     try {
@@ -95,7 +95,7 @@ export class HeroService {
    *
    * @param hero - HeroDetail
    */
-  async addHero(hero: HeroDetail) {
+  async addHero(hero: HeroDto) {
     let newHero = new this.heroC();
 
     try {
@@ -136,13 +136,13 @@ export class HeroService {
    * @param term - string
    * @returns Promise<Hero[]>
    */
-  async searchHeroes(term: string): Promise<HeroDetail[]> {
+  async searchHeroes(term: string): Promise<HeroDto[]> {
     if (!term.trim()) {
       return [];
     }
 
     const query = new Parse.Query(this.heroC);
-    let result: HeroDetail[] = [];
+    let result: HeroDto[] = [];
 
     try {
       const parseObject = await query
