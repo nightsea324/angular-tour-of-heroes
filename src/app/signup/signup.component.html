@@ -1,0 +1,24 @@
+<body>
+  <main>
+    <div class="row">
+      <div class="colm-form">
+        <div class="form-container">
+          <input
+            type="text"
+            (ngModel)="(username)"
+            placeholder="Email address or phone number"
+          />
+          <input
+            type="password"
+            (ngModel)="(password)"
+            placeholder="Password"
+          />
+          <button class="btn-login" (click)="signUp()">
+            Create new Account
+          </button>
+          <button class="btn-new" routerLink="/signin">Back to Login</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
