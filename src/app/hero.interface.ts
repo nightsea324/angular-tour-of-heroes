@@ -1,5 +1,5 @@
 // Hero - 英雄
 export interface Hero {
-  ID: number;
+  ID: string;
   name: string;
 }

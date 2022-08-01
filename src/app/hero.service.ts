@@ -22,25 +22,16 @@ export class HeroService {
    * @returns Promise<Hero[]>
    */
   async getHeroes(): Promise<Hero[]> {
-    let result: Hero[] = [];
     const query = new Parse.Query(this.heroC);
+    let result: Hero[] = [];
 
     try {
-      const parseObject = await query.find();
+      const parseObject = await query.ascending('createdAt').find();
+      if (!parseObject) {
+        alert('getHeroes failed,Heroes not exist');
+        return result;
+      }
       result = parseObject.map((item) => new Hero(item));
-      /** setID */
-      result = result.map((item, index, array) => {
-        /** 如果為第一筆，則設置為起始，否則為上一筆+1 */
-        if (index === 0) {
-          item.setID(CONFIG.Hero.heroIDStartAt);
-          return item;
-        }
-        item.setID(array[index - 1].getID() + 1);
-
-        return item;
-      });
-
-      return result;
     } catch (error) {
       console.error(error);
     }
@@ -54,20 +45,18 @@ export class HeroService {
    * @param id - number
    * @returns Promise<Hero>
    */
-  async getHeroByID(id: number): Promise<Hero> {
-    let result: Hero = new Hero(new Parse.Object());
+  async getHeroByID(id: string): Promise<Hero> {
     const query = new Parse.Query(this.heroC);
+    let result: Hero = new Hero(new Parse.Object());
 
     try {
-      const parseObject = await query.equalTo('heroID', id).find();
-      if (parseObject.length !== 0) {
-        /** 只取一筆 */
-        result = new Hero(parseObject[0]);
-
+      const parseObject = await query.get(id);
+      if (!parseObject) {
+        alert('getHeroByID failed, Hero not exist');
         return result;
       }
 
-      return result;
+      result = new Hero(parseObject);
     } catch (error) {
       console.error(error);
     }
@@ -81,28 +70,24 @@ export class HeroService {
    * @param hero - HeroDetail
    */
   async updateHero(hero: HeroDetail) {
-    let newHero = new this.heroC();
     const query = new Parse.Query(this.heroC);
 
-    /** getOld */
     try {
-      const parseObject = await query.equalTo('heroID', hero.ID).find();
-      if (!parseObject.length) {
+      /** getOld */
+      let parseObject = await query.get(hero.ID);
+      if (!parseObject) {
         alert('hero not exist');
+        return;
       }
-      /** 只取一筆 */
-      newHero = parseObject[0];
+
+      /** update */
+      parseObject.set('name', hero.name);
+      await parseObject.save();
     } catch (error) {
       console.error(error);
     }
 
-    /** update */
-    newHero.set('name', hero.name);
-    try {
-      await newHero.save();
-    } catch (error) {
-      console.error(error);
-    }
+    return;
   }
 
   /**
@@ -113,9 +98,8 @@ export class HeroService {
   async addHero(hero: HeroDetail) {
     let newHero = new this.heroC();
 
-    newHero.set('name', hero.name);
-    newHero.set('heroID', hero.ID);
     try {
+      newHero.set('name', hero.name);
       await newHero.save();
     } catch (error) {
       console.error(error);
@@ -127,44 +111,52 @@ export class HeroService {
    *
    * @param id - number
    */
-  async deleteHero(id: number) {
-    let newHero = new this.heroC();
+  async deleteHero(id: string) {
     const query = new Parse.Query(this.heroC);
 
-    /** getOld */
     try {
-      const parseObject = await query.equalTo('heroID', id).find();
-      if (!parseObject.length) {
+      /** getOld */
+      const parseObject = await query.get(id);
+      if (!parseObject) {
         alert('hero not exist');
+        return;
       }
-      /** 只取一筆 */
-      newHero = parseObject[0];
+      /** destroy */
+      await parseObject.destroy();
     } catch (error) {
       console.error(error);
     }
 
-    /** destroy */
-    try {
-      await newHero.destroy();
-    } catch (error) {
-      console.error(error);
-    }
+    return;
   }
 
   /**
-   * searchHeros - 搜尋英雄
+   * searchHeroes - 搜尋英雄
+   *
+   * @param term - string
+   * @returns Promise<Hero[]>
    */
-  searchHeroes(term: string) {
-    /** if (!term.trim()) { */
-    /** return of([]); */
-    /** } */
-    /** return this.http.get<Hero[]>(`${this.heroesUrl}/?name=${term}`).pipe( */
-    /** tap((x) => */
-    /** x.length */
-    /** ? this.log(`found heroes matching "${term}"`) */
-    /** : this.log(`no heroes matching "${term}"`) */
-    /** ), */
-    /** catchError(this.handleError<Hero[]>('searchHeroes', [])) */
-    /** ); */
+  async searchHeroes(term: string): Promise<HeroDetail[]> {
+    if (!term.trim()) {
+      return [];
+    }
+
+    const query = new Parse.Query(this.heroC);
+    let result: HeroDetail[] = [];
+
+    try {
+      const parseObject = await query
+        .matches('name', new RegExp(term))
+        .ascending('createdAt')
+        .find();
+      result = parseObject.map((item) => ({
+        ID: item.id,
+        name: item.get('name'),
+      }));
+    } catch (error) {
+      console.error(error);
+    }
+
+    return result;
   }
 }

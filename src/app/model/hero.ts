@@ -1,11 +1,11 @@
 export class Hero {
   private parseObject: Parse.Object;
-  private ID: number;
+  private ID: string;
   private name: string;
 
   constructor(parseObject: Parse.Object) {
     this.parseObject = parseObject;
-    this.ID = parseObject.get('heroID');
+    this.ID = parseObject.id;
     this.name = parseObject.get('name');
   }
 
@@ -14,7 +14,7 @@ export class Hero {
     return this.parseObject;
   }
 
-  public getID(): number {
+  public getID(): string {
     return this.ID;
   }
 
@@ -23,15 +23,6 @@ export class Hero {
   }
 
   /** setter */
-  /**
-   * setID -
-   *
-   * @param ID - number
-   */
-  public setID(ID: number) {
-    this.ID = ID;
-  }
-
   /**
    * setName -
    *

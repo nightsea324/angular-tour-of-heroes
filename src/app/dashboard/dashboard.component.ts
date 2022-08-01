@@ -20,6 +20,6 @@ export class DashboardComponent implements OnInit {
 
   // getHeroes - 取得英雄列表
   async getHeroes() {
-    this.heroes = (await this.heroSrv.getHeroes()).splice(1, 5);
+    this.heroes = (await this.heroSrv.getHeroes()).splice(0, 5);
   }
 }

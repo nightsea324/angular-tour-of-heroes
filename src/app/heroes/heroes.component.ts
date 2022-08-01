@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-// CONFIG
-import { CONFIG } from '../../../../CONFIG';
 // Interface
 import { Hero } from '../model/hero';
 import { Hero as HeroDetail } from '../hero.interface';
@@ -39,21 +37,18 @@ export class HeroesComponent implements OnInit {
    * @returns void
    */
   async add(name: string) {
-    name = name.trim();
     if (!name) {
       alert('empty name');
       return;
     }
-    let newHero: HeroDetail = {
-      name: name,
-      ID: this.heroes.length
-        ? this.heroes[this.heroes.length - 1].getID() + 1
-        : CONFIG.Hero.heroIDStartAt,
+    const newHero: HeroDetail = {
+      ID: '',
+      name: name.trim(),
     };
     try {
       await this.heroSrv.addHero(newHero);
       /** refresh */
-      this.heroes = await this.heroSrv.getHeroes();
+      this.getHeroes();
     } catch (error) {
       console.error(error);
     }
@@ -63,6 +58,9 @@ export class HeroesComponent implements OnInit {
 
   /**
    * delete - 刪除英雄
+   *
+   * @param inHero - Hero
+   * @returns void
    */
   delete(inHero: Hero): void {
     this.heroes = this.heroes.filter((hero) => hero !== inHero);

@@ -15,7 +15,7 @@ import { HeroService } from '../hero.service';
 export class HeroDetailComponent implements OnInit {
   hero?: Hero;
   HeroDetail: HeroInterface = {
-    ID: 0,
+    ID: '',
     name: '',
   };
 
@@ -31,28 +31,43 @@ export class HeroDetailComponent implements OnInit {
 
   async init() {
     await this.getHero();
-    if (this.hero?.getName()) {
-      this.HeroDetail.ID = this.hero.getID();
-      this.HeroDetail.name = this.hero?.getName();
-    }
   }
 
   /**
    * getHero - 取得英雄詳情
    */
   async getHero() {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) {
+      alert('get Hero failed,router not exist');
+      return;
+    }
     this.hero = await this.heroSrv.getHeroByID(id);
+    this.HeroDetail = {
+      ID: this.hero.getID(),
+      name: this.hero.getName(),
+    };
   }
 
+  /**
+   * goBack - 返回
+   *
+   * @returns void
+   */
   goBack(): void {
     this.location.back();
   }
 
-  // save - 儲存
+  /**
+   * save - 儲存
+   *
+   * @returns void
+   */
   save(): void {
-    /** if (this.hero) { */
-    /** this.heroSrv.updateHero(this.hero).subscribe(() => this.goBack()); */
-    /** } */
+    if (this.HeroDetail) {
+      this.heroSrv.updateHero(this.HeroDetail);
+    }
+    /** goBack */
+    this.goBack();
   }
 }
