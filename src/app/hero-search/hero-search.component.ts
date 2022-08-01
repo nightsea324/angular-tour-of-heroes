@@ -4,7 +4,7 @@ import { Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 // Interface
-import { Hero } from '../hero.interface';
+import { HeroDto } from '../model/Dto/hero.dto';
 
 // Srv
 import { HeroService } from '../hero.service';
@@ -15,12 +15,16 @@ import { HeroService } from '../hero.service';
   styleUrls: ['./hero-search.component.css'],
 })
 export class HeroSearchComponent implements OnInit {
-  heroes$!: Observable<Hero[]>;
+  heroes$!: Observable<HeroDto[]>;
   private searchTerms = new Subject<string>();
 
   constructor(private heroSrv: HeroService) {}
 
   ngOnInit(): void {
+    this.init();
+  }
+
+  init() {
     this.heroes$ = this.searchTerms.pipe(
       debounceTime(0),
       distinctUntilChanged(),
@@ -30,6 +34,9 @@ export class HeroSearchComponent implements OnInit {
 
   /**
    * search -
+   *
+   * @param term - string
+   * @returns void
    */
   search(term: string): void {
     this.searchTerms.next(term);

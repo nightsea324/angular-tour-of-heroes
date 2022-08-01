@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+
 // Interface
-import { Hero } from '../hero.interface';
+import { Hero } from '../model/hero';
+import { HeroDto } from '../model/Dto/hero.dto';
+
 // Srv
 import { HeroService } from '../hero.service';
 
@@ -10,38 +13,59 @@ import { HeroService } from '../hero.service';
   styleUrls: ['./heroes.component.css'],
 })
 export class HeroesComponent implements OnInit {
-  // heroes -
   heroes: Hero[] = [];
 
   constructor(private heroSrv: HeroService) {}
 
   ngOnInit(): void {
-    this.getHeroes();
+    this.init();
   }
 
-  // getter ------
-  // getHeroes - 取得英雄列表
-  getHeroes(): void {
-    this.heroSrv.getHeroes().subscribe((heroes) => (this.heroes = heroes));
+  async init() {
+    await this.getHeroes();
   }
 
-  // setter -----
-  // add - 新增英雄
-  add(name: string): void {
-    name = name.trim();
+  /**
+   * getHeroes - 取得英雄列表
+   */
+  async getHeroes() {
+    this.heroes = await this.heroSrv.getHeroes();
+  }
+
+  /**
+   * add - 新增英雄
+   *
+   * @param name - string
+   * @returns void
+   */
+  async add(name: string) {
     if (!name) {
+      alert('empty name');
       return;
     }
-    this.heroSrv.addHero({ name } as Hero).subscribe((hero) => {
-      this.heroes.push(hero);
-    });
+    const newHero: HeroDto = {
+      ID: '',
+      name: name.trim(),
+    };
+    try {
+      await this.heroSrv.addHero(newHero);
+      /** refresh */
+      this.getHeroes();
+    } catch (error) {
+      console.error(error);
+    }
+
+    return;
   }
 
   /**
    * delete - 刪除英雄
+   *
+   * @param inHero - Hero
+   * @returns void
    */
   delete(inHero: Hero): void {
     this.heroes = this.heroes.filter((hero) => hero !== inHero);
-    this.heroSrv.deleteHero(inHero.id).subscribe();
+    this.heroSrv.deleteHero(inHero.getID());
   }
 }

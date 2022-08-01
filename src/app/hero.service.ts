@@ -1,104 +1,162 @@
 import { Injectable } from '@angular/core';
 // Interface
-import { Hero } from './hero.interface';
-// RxJS
-import { Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
-// Srv
-import { MessagesService } from './messages.service';
-// Http
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Hero } from './model/hero';
+import { HeroDto } from './model/Dto/hero.dto';
+// Parse
+import * as Parse from 'parse';
+// config
+import { CONFIG } from '../../../CONFIG';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HeroService {
-  constructor(private messagesSrv: MessagesService, private http: HttpClient) {}
+  constructor() {}
 
-  // log -
-  private log(message: string) {
-    this.messagesSrv.add(`HeroService: ${message}`);
-  }
-
-  // heroesUrl -
-  private heroesUrl = 'api/heroes';
-
-  // httpOptions -
-  httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-  };
-
-  // handleError -
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      console.error(error); // log to console instead
-      this.log(`${operation} failed: ${error.message}`);
-      return of(result as T);
-    };
-  }
-
-  // getter -----
-  // getHeroes - 取得英雄列表
-  getHeroes(): Observable<Hero[]> {
-    return this.http.get<Hero[]>(this.heroesUrl).pipe(
-      tap((_) => this.log('fetched heroes')),
-      catchError(this.handleError<Hero[]>('getHeroes', []))
-    );
-  }
-
-  // getHeroByID - 透過ID取得英雄
-  getHeroByID(id: number): Observable<Hero> {
-    const url = `${this.heroesUrl}/${id}`;
-
-    return this.http.get<Hero>(url).pipe(
-      tap((_) => this.log(`fetched hero id=${id}`)),
-      catchError(this.handleError<Hero>(`getHero id=${id}`))
-    );
-  }
-
-  // setter -----
-  // updateHero - 更新英雄
-  updateHero(hero: Hero): Observable<any> {
-    return this.http.put(this.heroesUrl, hero, this.httpOptions).pipe(
-      tap((_) => this.log(`updated hero id=${hero.id}`)),
-      catchError(this.handleError<any>(`updateed`))
-    );
-  }
-
-  // addHero - 新增英雄
-  addHero(hero: Hero): Observable<Hero> {
-    return this.http.post<Hero>(this.heroesUrl, hero, this.httpOptions).pipe(
-      tap((newHero: Hero) => this.log(`added hero w/ id=${newHero.id}`)),
-      catchError(this.handleError<Hero>('addHero'))
-    );
-  }
+  /** heroC - parseClass */
+  private heroC = Parse.Object.extend(CONFIG.Parse.heroC);
 
   /**
-   * delete - 刪除英雄
+   * getHeroes - 取得英雄列表
+   *
+   * @returns Promise<Hero[]>
    */
-  deleteHero(id: number): Observable<Hero> {
-    const url = `${this.heroesUrl}/${id}`;
+  async getHeroes(): Promise<Hero[]> {
+    const query = new Parse.Query(this.heroC);
+    let result: Hero[] = [];
 
-    return this.http.delete<Hero>(url, this.httpOptions).pipe(
-      tap((_) => this.log(`deleted hero id=${id}`)),
-      catchError(this.handleError<Hero>('deleteHero'))
-    );
-  }
-
-  /**
-   * searchHeros - 搜尋英雄
-   */
-  searchHeroes(term: string): Observable<Hero[]> {
-    if (!term.trim()) {
-      return of([]);
+    try {
+      const parseObject = await query.ascending('createdAt').find();
+      if (!parseObject) {
+        alert('getHeroes failed,Heroes not exist');
+        return result;
+      }
+      result = parseObject.map((item) => new Hero(item));
+    } catch (error) {
+      console.error(error);
     }
-    return this.http.get<Hero[]>(`${this.heroesUrl}/?name=${term}`).pipe(
-      tap((x) =>
-        x.length
-          ? this.log(`found heroes matching "${term}"`)
-          : this.log(`no heroes matching "${term}"`)
-      ),
-      catchError(this.handleError<Hero[]>('searchHeroes', []))
-    );
+
+    return result;
+  }
+
+  /**
+   * getHeroByID - 透過ID取得英雄
+   *
+   * @param id - number
+   * @returns Promise<Hero>
+   */
+  async getHeroByID(id: string): Promise<Hero> {
+    const query = new Parse.Query(this.heroC);
+    let result: Hero = new Hero(new Parse.Object());
+
+    try {
+      const parseObject = await query.get(id);
+      if (!parseObject) {
+        alert('getHeroByID failed, Hero not exist');
+        return result;
+      }
+
+      result = new Hero(parseObject);
+    } catch (error) {
+      console.error(error);
+    }
+
+    return result;
+  }
+
+  /**
+   * updateHero - 更新英雄
+   *
+   * @param hero - HeroDetail
+   */
+  async updateHero(hero: HeroDto) {
+    const query = new Parse.Query(this.heroC);
+
+    try {
+      /** getOld */
+      let parseObject = await query.get(hero.ID);
+      if (!parseObject) {
+        alert('hero not exist');
+        return;
+      }
+
+      /** update */
+      parseObject.set('name', hero.name);
+      await parseObject.save();
+    } catch (error) {
+      console.error(error);
+    }
+
+    return;
+  }
+
+  /**
+   * addHero - 新增英雄
+   *
+   * @param hero - HeroDetail
+   */
+  async addHero(hero: HeroDto) {
+    let newHero = new this.heroC();
+
+    try {
+      newHero.set('name', hero.name);
+      await newHero.save();
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  /**
+   * deleteHero - 刪除英雄
+   *
+   * @param id - number
+   */
+  async deleteHero(id: string) {
+    const query = new Parse.Query(this.heroC);
+
+    try {
+      /** getOld */
+      const parseObject = await query.get(id);
+      if (!parseObject) {
+        alert('hero not exist');
+        return;
+      }
+      /** destroy */
+      await parseObject.destroy();
+    } catch (error) {
+      console.error(error);
+    }
+
+    return;
+  }
+
+  /**
+   * searchHeroes - 搜尋英雄
+   *
+   * @param term - string
+   * @returns Promise<Hero[]>
+   */
+  async searchHeroes(term: string): Promise<HeroDto[]> {
+    if (!term.trim()) {
+      return [];
+    }
+
+    const query = new Parse.Query(this.heroC);
+    let result: HeroDto[] = [];
+
+    try {
+      const parseObject = await query
+        .matches('name', new RegExp(term))
+        .ascending('createdAt')
+        .find();
+      result = parseObject.map((item) => ({
+        ID: item.id,
+        name: item.get('name'),
+      }));
+    } catch (error) {
+      console.error(error);
+    }
+
+    return result;
   }
 }

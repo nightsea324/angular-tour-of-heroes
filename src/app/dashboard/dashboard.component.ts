@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 // Interface
-import { Hero } from '../hero.interface';
+import { Hero } from '../model/hero';
 // Srv
 import { HeroService } from '../hero.service';
 
@@ -19,9 +19,7 @@ export class DashboardComponent implements OnInit {
   }
 
   // getHeroes - 取得英雄列表
-  getHeroes(): void {
-    this.heroSrv.getHeroes().subscribe((heroes) => {
-      this.heroes = heroes.splice(1, 5);
-    });
+  async getHeroes() {
+    this.heroes = (await this.heroSrv.getHeroes()).splice(0, 5);
   }
 }

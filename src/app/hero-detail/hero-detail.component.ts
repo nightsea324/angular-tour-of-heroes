@@ -1,8 +1,9 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 // Interface
-import { Hero } from '../hero.interface';
+import { Hero } from '../model/hero';
+import { HeroDto } from '../model/Dto/hero.dto';
 // Srv
 import { HeroService } from '../hero.service';
 
@@ -12,7 +13,11 @@ import { HeroService } from '../hero.service';
   styleUrls: ['./hero-detail.component.css'],
 })
 export class HeroDetailComponent implements OnInit {
-  @Input() hero?: Hero;
+  hero?: Hero;
+  HeroDetail: HeroDto = {
+    ID: '',
+    name: '',
+  };
 
   constructor(
     private route: ActivatedRoute,
@@ -21,24 +26,48 @@ export class HeroDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.getHero();
+    this.init();
   }
 
-  // getHero - 取得英雄列表
-  getHero(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.heroSrv.getHeroByID(id).subscribe((hero) => (this.hero = hero));
+  async init() {
+    await this.getHero();
   }
 
-  // goBack - 返回上一頁
+  /**
+   * getHero - 取得英雄詳情
+   */
+  async getHero() {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) {
+      alert('get Hero failed,router not exist');
+      return;
+    }
+    this.hero = await this.heroSrv.getHeroByID(id);
+    this.HeroDetail = {
+      ID: this.hero.getID(),
+      name: this.hero.getName(),
+    };
+  }
+
+  /**
+   * goBack - 返回
+   *
+   * @returns void
+   */
   goBack(): void {
     this.location.back();
   }
 
-  // save - 儲存
+  /**
+   * save - 儲存
+   *
+   * @returns void
+   */
   save(): void {
-    if (this.hero) {
-      this.heroSrv.updateHero(this.hero).subscribe(() => this.goBack());
+    if (this.HeroDetail) {
+      this.heroSrv.updateHero(this.HeroDetail);
     }
+    /** goBack */
+    this.goBack();
   }
 }
