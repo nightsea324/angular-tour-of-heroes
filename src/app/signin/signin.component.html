@@ -5,12 +5,12 @@
         <div class="form-container">
           <input
             type="text"
-            (ngModel)="(account)"
+            [(ngModel)]="username"
             placeholder="Email address or phone number"
           />
           <input
             type="password"
-            (ngModel)="(password)"
+            [(ngModel)]="password"
             placeholder="Password"
           />
           <button class="btn-login" (click)="signIn()">Login</button>

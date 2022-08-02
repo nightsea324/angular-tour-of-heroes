@@ -15,4 +15,6 @@ parse.serverURL = CONFIG.Parse.serverURL;
 })
 export class AppComponent {
   title = 'Tour of Heros';
+
+  ngOnInit(): void {}
 }

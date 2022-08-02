@@ -6,21 +6,9 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { HeroDetailComponent } from './hero-detail/hero-detail.component';
 import { SigninComponent } from './signin/signin.component';
 import { SignupComponent } from './signup/signup.component';
+import { IndexComponent } from './index/index.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
-  {
-    path: 'dashboard',
-    component: DashboardComponent,
-  },
-  {
-    path: 'detail/:id',
-    component: HeroDetailComponent,
-  },
-  {
-    path: 'heroes',
-    component: HeroesComponent,
-  },
   {
     path: 'signin',
     component: SigninComponent,
@@ -28,6 +16,25 @@ const routes: Routes = [
   {
     path: 'signup',
     component: SignupComponent,
+  },
+  {
+    path: '',
+    component: IndexComponent,
+    children: [
+      {
+        path: 'dashboard',
+        component: DashboardComponent,
+      },
+      {
+        path: 'detail/:id',
+        component: HeroDetailComponent,
+      },
+      {
+        path: 'heroes',
+        component: HeroesComponent,
+      },
+      { path: '**', redirectTo: 'dashboard', pathMatch: 'full' },
+    ],
   },
 ];
 

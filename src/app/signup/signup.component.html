@@ -5,18 +5,16 @@
         <div class="form-container">
           <input
             type="text"
-            (ngModel)="(username)"
+            [(ngModel)]="username"
             placeholder="Email address or phone number"
           />
           <input
             type="password"
-            (ngModel)="(password)"
+            [(ngModel)]="password"
             placeholder="Password"
           />
-          <button class="btn-login" (click)="signUp()">
-            Create new Account
-          </button>
-          <button class="btn-new" routerLink="/signin">Back to Login</button>
+          <button class="btn-new" (click)="signUp()">Create new Account</button>
+          <a routerLink="/signin">Back to Login</a>
         </div>
       </div>
     </div>
