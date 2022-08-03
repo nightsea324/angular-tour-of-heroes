@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 /** Parse */
 import * as Parse from 'parse';
 
@@ -10,7 +11,7 @@ import * as Parse from 'parse';
 export class IndexComponent implements OnInit {
   current = Parse.User.current();
 
-  constructor() {}
+  constructor(private router: Router) {}
 
   ngOnInit(): void {}
 
@@ -19,6 +20,7 @@ export class IndexComponent implements OnInit {
       await Parse.User.logOut();
       this.current = Parse.User.current();
       alert('logOut');
+      this.router.navigate(['']);
     } catch (error) {
       console.error(error);
     }

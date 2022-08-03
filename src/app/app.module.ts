@@ -14,7 +14,6 @@ import { HttpClientModule } from '@angular/common/http';
 // Component
 import { HeroesComponent } from './heroes/heroes.component';
 import { HeroDetailComponent } from './hero-detail/hero-detail.component';
-import { MessagesComponent } from './messages/messages.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { HeroSearchComponent } from './hero-search/hero-search.component';
 import { SigninComponent } from './signin/signin.component';
@@ -26,7 +25,6 @@ import { IndexComponent } from './index/index.component';
     AppComponent,
     HeroesComponent,
     HeroDetailComponent,
-    MessagesComponent,
     DashboardComponent,
     HeroSearchComponent,
     SigninComponent,
