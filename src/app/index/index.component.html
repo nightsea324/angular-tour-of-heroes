@@ -1,0 +1,7 @@
+<nav>
+  <a routerLink="/heroes">Heroes</a>
+  <a routerLink="/dashboard">dashboard</a>
+  <a *ngIf="!current" routerLink="/signin">signin</a>
+  <a *ngIf="current" (click)="logout()">logout</a>
+</nav>
+<router-outlet></router-outlet>

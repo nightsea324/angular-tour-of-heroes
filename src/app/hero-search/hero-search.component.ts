@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 // RxJS
 import { Observable, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 // Interface
 import { HeroDto } from '../model/Dto/hero.dto';
@@ -26,7 +26,6 @@ export class HeroSearchComponent implements OnInit {
 
   init() {
     this.heroes$ = this.searchTerms.pipe(
-      debounceTime(0),
       distinctUntilChanged(),
       switchMap((term: string) => this.heroSrv.searchHeroes(term))
     );
